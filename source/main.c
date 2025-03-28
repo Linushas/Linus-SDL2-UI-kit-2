@@ -13,12 +13,14 @@ int main(int argc, char **argv) {
         startUp(&wm, &ui_res);
 
         Panel panel = createPanel();
-        panel_newComponent(panel, COMPONENT_BUTTON, "button1");
+        panel_newComponent(panel, COMPONENT_BUTTON, "tab1");
+        panel_newComponent(panel, COMPONENT_BUTTON, "tab2");
+        panel_newComponent(panel, COMPONENT_BUTTON, "switch_theme");
         applyStyling(wm, panel, ui_res);
         
         while(wm.is_running) {
                 eventHandler(&wm);
-                UI_eventHandler(&wm, panel, &ui_event, ui_res);
+                UI_eventHandler(&wm, panel, &ui_event, &ui_res);
                 render(wm.rend, panel);
         }
 

@@ -57,16 +57,22 @@ int UI_Init(UIRes *res) {
 }
 
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
-        int padding = 20;
-        panel_setAppearance(panel, createRect(padding, padding, wm.w - padding*2, wm.h - padding*2), ui_res.color[GREY], ui_res.color[WHITE]);
+        panel_setAppearance(panel, createRect(0, 0, wm.w, wm.h), ui_res.color[BLUE], ui_res.color[WHITE]);
 
-        Button b = panel_getComponent(panel, "button1");
-        if(b == NULL) printf("error\n");
-        button_setAppearance(wm.rend, b, createRect(100, 100, 200, 50), 
-                ui_res.color[BLACK], ui_res.color[WHITE], 
-                ui_res.montserrat[2]
-        );
-        // button_setText(b, "My Button");
+        Button b = panel_getComponent(panel, "tab1");
+        button_setText(b, "Tab 1");
+        button_setAppearance(wm.rend, b, createRect(0, 0, wm.w/2, 40), ui_res.color[BLACK], ui_res.color[WHITE], ui_res.montserrat[2]);
+        button_setColorsHovered(wm.rend, b, ui_res.color[WHITE], ui_res.color[BLACK]);
+
+        b = panel_getComponent(panel, "tab2");
+        button_setText(b, "Tab 2");
+        button_setAppearance(wm.rend, b, createRect(wm.w/2, 0, wm.w/2, 40), ui_res.color[BLACK], ui_res.color[WHITE], ui_res.montserrat[2]);
+        button_setColorsHovered(wm.rend, b, ui_res.color[WHITE], ui_res.color[BLACK]);
+
+        b = panel_getComponent(panel, "switch_theme");
+        button_setText(b, "Switch theme");
+        button_setAppearance(wm.rend, b, createRect(100, 100, 150, 40), ui_res.color[BLACK], ui_res.color[WHITE], ui_res.montserrat[1]);
+        button_setColorsHovered(wm.rend, b, ui_res.color[WHITE], ui_res.color[BLACK]);
 }
 
 void render(SDL_Renderer *rend, Panel panel) {
@@ -76,12 +82,26 @@ void render(SDL_Renderer *rend, Panel panel) {
         SDL_RenderPresent(rend);
 }
 
-void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes ui_res) {
+void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         if(wm->resized) {
-                applyStyling(*wm, panel, ui_res);
+                applyStyling(*wm, panel, *ui_res);
         }
 
         panel_update(wm->rend, panel, ui_event, wm->is_mouse_down);
+        switch(ui_event->event_type) {
+                case BUTTON_CLICKED:
+                        if(strcmp(ui_event->component_key, "switch_theme") == 0) {
+                                SDL_Color tmp = ui_res->color[BLUE];
+                                ui_res->color[BLUE] = ui_res->color[RED];
+                                ui_res->color[RED] = tmp;
+                                applyStyling(*wm, panel, *ui_res);
+
+                                tmp = ui_res->color[BLACK];
+                                ui_res->color[BLACK] = ui_res->color[WHITE];
+                                ui_res->color[WHITE] = tmp;
+                                applyStyling(*wm, panel, *ui_res);
+                        }
+        }
 }
 
 SDL_Rect createRect(int x, int y, int w, int h) {

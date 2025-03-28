@@ -102,6 +102,8 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
 
         int mouse_x, mouse_y;
         SDL_GetMouseState(&mouse_x, &mouse_y);
+
+        static bool was_mouse_down = false;
         
         if (p == NULL) {
                 printf("Error: Attempting to render a NULL Panel.\n");
@@ -114,8 +116,9 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
 
                 switch (comp.type) {
                         case COMPONENT_BUTTON:
-                                if(button_event((Button)comp.component, mouse_x, mouse_y) && is_mouse_down) {
+                                if(button_event((Button)comp.component, mouse_x, mouse_y) && (was_mouse_down && !is_mouse_down)) {
                                         strcpy(ui_event->component_key, comp.key);
+                                        was_mouse_down = false;
                                         return ui_event->event_type = BUTTON_CLICKED;
                                 }
                                 break;
@@ -125,7 +128,7 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
                                 break;
                 }
         }
-
+        was_mouse_down = is_mouse_down;
         return ui_event->event_type = -1;
 }
 

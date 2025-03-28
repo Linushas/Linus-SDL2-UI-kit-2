@@ -24,7 +24,7 @@ typedef struct UIResources {
 } UIRes;
 
 int UI_Init(UIRes *res);
-void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes ui_res);
+void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res);
 int eventHandler(WM *wm);
 
 void render(SDL_Renderer *rend, Panel panel);
