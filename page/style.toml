@@ -3,22 +3,24 @@ x = 0
 y = 0
 w = "WINDOW_WIDTH"
 h = "WINDOW_HEIGHT"
-bg = "BLACK"
-border_color = "BLACK"
+bg = "WHITE"
+border_color = "WHITE"
 
 [label1]
 x = 100
 y = 100
-fg = "GREEN"
-font = "montserrat,medium"
+fg = "BLACK"
+font = "montserrat,big"
 
 [button1]
 x = 100
 y = 200
 w = 150
 h = 40
-bg = "BLACK"
-fg = "RED"
+bg = "SPANISH_BLUE"
+fg = "WHITE"
+hov_bg = "GREY"
+hov_fg = "BLACK"
 font = "montserrat,medium"
 
 [button2]
@@ -26,6 +28,25 @@ x = 300
 y = 200
 w = 150
 h = 40
-bg = "BLACK"
-fg = "RED"
+bg = "SPANISH_BLUE"
+fg = "WHITE"
+hov_bg = "GREY"
+hov_fg = "BLACK"
+font = "montserrat,medium"
+
+[l1]
+x = 100
+y = 100
+fg = "BLACK"
+font = "montserrat,big"
+
+[b1]
+x = 200
+y = 200
+w = 150
+h = 40
+bg = "SPANISH_BLUE"
+fg = "WHITE"
+hov_bg = "GREY"
+hov_fg = "BLACK"
 font = "montserrat,medium"

@@ -105,9 +105,31 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
         return;
     }
 
+    toml_table_t *panel_table = toml_table_in(root, "main");
+    if (panel_table) {
+        const char *x = toml_raw_in(panel_table, "x");
+        const char *y = toml_raw_in(panel_table, "y");
+        const char *w = toml_raw_in(panel_table, "w");
+        const char *h = toml_raw_in(panel_table, "h");
+        const char *bg = toml_raw_in(panel_table, "bg");
+        const char *border_color = toml_raw_in(panel_table, "border_color");
+
+        if (x && y && w && h) {
+            int width = strcmp(w, "\"WINDOW_WIDTH\"") == 0 ? 
+                        wm.w : atoi(w);
+            int height = strcmp(h, "\"WINDOW_HEIGHT\"") == 0 ? 
+                         wm.h : atoi(h);
+            panel_setRect(panel, (SDL_Rect){.x=atoi(x), .y=atoi(y), .w=width, .h=height});
+        }
+
+        if (bg) panel_setBGColor(panel, getColorFromName(bg, ui_res));
+        if (border_color) panel_setBorderColor(panel, getColorFromName(border_color, ui_res));
+    }
+
     for (int i = 0; ; i++) {
         const char *comp_key = toml_key_in(root, i);
         if (!comp_key) break;
+        if (strcmp(comp_key, "main") == 0) continue;
 
         toml_table_t *comp = toml_table_in(root, comp_key);
         if (!comp) continue;
@@ -118,10 +140,12 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
         const char *h = toml_raw_in(comp, "h");
         const char *bg = toml_raw_in(comp, "bg");
         const char *fg = toml_raw_in(comp, "fg");
+        const char *hov_bg = toml_raw_in(comp, "hov_bg");
+        const char *hov_fg = toml_raw_in(comp, "hov_fg");
         const char *font = toml_raw_in(comp, "font");
 
         int type = panel_getComponentType(panel, (char *)comp_key);
-        switch (type) {
+        switch(type) {
             case COMPONENT_BUTTON: {
                 Button b = panel_getComponent(panel, (char *)comp_key);
                 if (!b) break;
@@ -139,6 +163,10 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
                 if (bg) button_setBGColor(b, getColorFromName(bg, ui_res));
                 if (fg) button_setFGColor(b, getColorFromName(fg, ui_res));
                 if (font) button_setFont(b, getFontFromName(font, ui_res));
+
+                if(hov_bg && hov_fg) {
+                    button_setColorsHovered(wm.rend, b, getColorFromName(hov_bg, ui_res), getColorFromName(hov_fg, ui_res));
+                }
 
                 button_refreshTextures(wm.rend, b);
                 break;
@@ -159,7 +187,7 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
                 break;
 
             default:
-                fprintf(stderr, "Unknown component type: %s\n", comp_key);
+                // fprintf(stderr, "Unknown component type: %s\n", comp_key);
                 break;
         }
     }
@@ -188,6 +216,18 @@ SDL_Color getColorFromName(const char *name, const UIRes ui_res) {
         return ui_res.color[BLUE];
     } else if (strcmp(stripped_name, "GREEN") == 0) {
         return ui_res.color[GREEN];
+    } else if (strcmp(stripped_name, "GREY") == 0) {
+        return ui_res.color[GREY];
+    } else if (strcmp(stripped_name, "DIM_GREY") == 0) {
+        return ui_res.color[DIM_GREY];
+    } else if (strcmp(stripped_name, "SLATE_GREY") == 0) {
+        return ui_res.color[SLATE_GREY];
+    } else if (strcmp(stripped_name, "RAISIN_BLACK") == 0) {
+        return ui_res.color[RAISIN_BLACK];
+    } else if (strcmp(stripped_name, "CHARCOAL") == 0) {
+        return ui_res.color[CHARCOAL];
+    } else if (strcmp(stripped_name, "SPANISH_BLUE") == 0) {
+        return ui_res.color[SPANISH_BLUE];
     }
     return ui_res.color[WHITE];
 }
