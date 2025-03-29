@@ -72,6 +72,12 @@ void render(SDL_Renderer *rend, Panel panel) {
         SDL_RenderPresent(rend);
 }
 
+void switchPage(WM *wm, Panel panel, UIRes *ui_res, char *filename) {
+        panel_destroyAllComponents(panel);
+        parseXML(wm, panel, filename);
+        applyStyling(*wm, panel, *ui_res);
+}
+
 void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         if(wm->resized) {
                 applyStyling(*wm, panel, *ui_res);
@@ -81,14 +87,10 @@ void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         switch(ui_event->event_type) {
                 case BUTTON_CLICKED:
                         if(strcmp(ui_event->component_key, "button2") == 0) {
-                                panel_destroyAllComponents(panel);
-                                parseXML(wm, panel, "page/page2.xml");
-                                applyStyling(*wm, panel, *ui_res);
+                                switchPage(wm, panel, ui_res, "page/page2.xml");
                         }
                         if(strcmp(ui_event->component_key, "b1") == 0) {
-                                panel_destroyAllComponents(panel);
-                                parseXML(wm, panel, "page/page.xml");
-                                applyStyling(*wm, panel, *ui_res);
+                                switchPage(wm, panel, ui_res, "page/page.xml");
                         }
                         break;
         }

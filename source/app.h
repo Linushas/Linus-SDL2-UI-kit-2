@@ -29,6 +29,8 @@ int eventHandler(WM *wm);
 
 void render(SDL_Renderer *rend, Panel panel);
 
+void switchPage(WM *wm, Panel panel, UIRes *ui_res, char *filename);
+
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res);
 
 SDL_Rect createRect(int x, int y, int w, int h);

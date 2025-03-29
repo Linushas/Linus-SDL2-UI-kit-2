@@ -66,7 +66,6 @@ void parseXML(WM *wm, Panel panel, const char *filename) {
                             continue;
                         }
     
-                        // Create the component
                         int x = padding;
                         int y = y_offset;
                         panel_newLazyComponent(wm->rend, panel, content_copy, x, y, component_type, key_copy);
@@ -83,6 +82,5 @@ void parseXML(WM *wm, Panel panel, const char *filename) {
             }
         }
     
-        printf("Finished parsing XML.\n");
         xmlFreeDoc(doc);
 }
