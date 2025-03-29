@@ -193,3 +193,52 @@ int destroyPanel(Panel p) {
 
         return 0;
 }
+
+void panel_setBGColor(Panel p, SDL_Color bg) {
+        p->bg = bg;
+}
+
+void panel_setBorderColor(Panel p, SDL_Color border_color) {
+        p->border_color = border_color;
+}
+
+SDL_Rect panel_getRect(Panel p) {
+        return p->rect;
+}
+
+bool panel_isHidden(Panel p) {
+        return p->hidden;
+}
+
+int panel_getComponentCount(Panel p) {
+        return p->component_count;
+}
+
+int panel_getComponentType(Panel p, char *key) {
+        for(int i = 0; i < p->component_count; i++) {
+                Component comp = p->component_list[i];
+                if(strcmp(key, comp.key) == 0) {
+                        return comp.type;
+                }
+        }
+        return -1;
+}
+
+bool panel_isComponentHidden(Panel p, char *key) {
+        for(int i = 0; i < p->component_count; i++) {
+                Component comp = p->component_list[i];
+                if(strcmp(key, comp.key) == 0) {
+                        return comp.hidden;
+                }
+        }
+        return false;
+}
+
+void panel_destroyAllComponents(Panel p) {
+        for(int i = 0; i < p->component_count; i++) {
+                free(p->component_list[i].key);
+                free(p->component_list[i].component);
+        }
+        free(p->component_list);
+        p->component_count = 0;
+}

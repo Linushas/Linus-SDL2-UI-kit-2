@@ -19,12 +19,23 @@ Panel createPanel();
 void panel_render(SDL_Renderer *rend, Panel p);
 int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_down);
 int destroyPanel(Panel p);
-void panel_newComponent(Panel p, int type, char *key);
-int panel_addComponent(Panel p, int type, void *component, char *key);
-void *panel_getComponent(Panel p, char *key);
-void panel_hideComponent(Panel p, char *key, bool hide);
+
 void panel_hide(Panel p, bool hide);
 void panel_setRect(Panel p, SDL_Rect rect);
 void panel_setAppearance(Panel p, SDL_Rect rect, SDL_Color bg, SDL_Color border_color);
+void panel_setBGColor(Panel p, SDL_Color bg);
+void panel_setBorderColor(Panel p, SDL_Color border_color);
+
+SDL_Rect panel_getRect(Panel p);
+bool panel_isHidden(Panel p);
+int panel_getComponentCount(Panel p);
+
+void panel_newComponent(Panel p, int type, char *key);
+int panel_addComponent(Panel p, int type, void *component, char *key);
+void *panel_getComponent(Panel p, char *key);
+int panel_getComponentType(Panel p, char *key);
+bool panel_isComponentHidden(Panel p, char *key);
+void panel_destroyAllComponents(Panel p);
+void panel_hideComponent(Panel p, char *key, bool hide);
 
 #endif
