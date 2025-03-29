@@ -1,6 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
+#include <stdbool.h>
 #include "../SDL_include.h"
 
 typedef struct Button *Button;
@@ -16,6 +17,7 @@ void button_setFGColor(Button b, SDL_Color fg);
 void button_setFont(Button b, TTF_Font *font);
 void button_refreshTextures(SDL_Renderer *rend, Button b);
 
+void button_setRect(Button b, SDL_Rect rect);
 SDL_Rect button_getRect(Button b);
 
 int button_event(Button b, int mouse_x, int mouse_y); // 0: NONE , 1: HOVERED

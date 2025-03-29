@@ -31,6 +31,7 @@ bool panel_isHidden(Panel p);
 int panel_getComponentCount(Panel p);
 
 void panel_newComponent(Panel p, int type, char *key);
+void panel_newLazyComponent(SDL_Renderer *rend, Panel p, char *text, int x, int y, int type, char *key);
 int panel_addComponent(Panel p, int type, void *component, char *key);
 void *panel_getComponent(Panel p, char *key);
 int panel_getComponentType(Panel p, char *key);

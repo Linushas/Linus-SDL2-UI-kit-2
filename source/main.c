@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
         panel_newComponent(panel, COMPONENT_BUTTON, "tab1");
         panel_newComponent(panel, COMPONENT_BUTTON, "tab2");
         panel_newComponent(panel, COMPONENT_BUTTON, "switch_theme");
+        panel_newComponent(panel, COMPONENT_LABEL, "label1");
         applyStyling(wm, panel, ui_res);
         
         while(wm.is_running) {
@@ -45,10 +46,8 @@ void close(WM *wm, Panel panel, UIRes *ui_res) {
         }
 
         destroyPanel(panel);
-
         SDL_DestroyRenderer(wm->rend);
         SDL_DestroyWindow(wm->win);
-
         TTF_Quit();
         SDL_Quit();
 }

@@ -73,6 +73,10 @@ void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
         button_setText(b, "Switch theme");
         button_setAppearance(wm.rend, b, createRect(100, 100, 150, 40), ui_res.color[BLACK], ui_res.color[WHITE], ui_res.montserrat[1]);
         button_setColorsHovered(wm.rend, b, ui_res.color[WHITE], ui_res.color[BLACK]);
+
+        Label lbl = panel_getComponent(panel, "label1");
+        label_setText(lbl, "hello world");
+        label_setAppearance(wm.rend, lbl, 200, 200, ui_res.color[WHITE], ui_res.montserrat[1]);
 }
 
 void render(SDL_Renderer *rend, Panel panel) {

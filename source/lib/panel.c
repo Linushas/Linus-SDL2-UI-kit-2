@@ -3,13 +3,12 @@
 #include <string.h>
 #include "panel.h"
 #include "button.h"
+#include "label.h"
 
 typedef struct Component {
         char *key;
         void *component;
         int type;
-
-        SDL_Rect rect;
         bool hidden;
 } Component;
 
@@ -18,6 +17,7 @@ typedef struct Panel {
         SDL_Color bg, border_color;
         bool hidden;
 
+        TTF_Font *default_font;
         struct ChildComponents {
                 int component_count;
                 Component *component_list;
@@ -37,6 +37,7 @@ Panel createPanel() {
         panel->component_count = 0;
         panel->component_list = NULL;
         panel->hidden = false;
+        panel->default_font = TTF_OpenFont("res/Montserrat-Regular.ttf", 16);
 
         return panel;
 }
@@ -52,7 +53,37 @@ void panel_newComponent(Panel p, int type, char *key) {
                         Button b = createButton();
                         panel_addComponent(p, type, b, key);
                         break;
+                case COMPONENT_LABEL:
+                        Label lbl = createLabel();
+                        panel_addComponent(p, type, lbl, key);
+                        break;
+                default:
+                        printf("Warning: Unknown component type (%d) in panel_newComponent.\n", type);
+                        break;
+        }
+}
 
+void panel_newLazyComponent(SDL_Renderer *rend, Panel p, char *text, int x, int y, int type, char *key) {
+        if (p == NULL) {
+                printf("Error: Attempting to add component to a NULL Panel.\n");
+                return;
+        }
+        SDL_Color bg = {220, 220, 220};
+        SDL_Color fg = {0,0,0};
+
+        switch (type) {
+                case COMPONENT_BUTTON:
+                        Button b = createButton();
+                        panel_addComponent(p, type, b, key);
+                        button_setText(b, text);
+                        button_setAppearance(rend, b, (SDL_Rect){.x=x, .y=y, .w=150, .h=30}, bg, fg, p->default_font);
+                        break;
+                case COMPONENT_LABEL:
+                        Label lbl = createLabel();
+                        panel_addComponent(p, type, lbl, key);
+                        label_setText(lbl, text);
+                        label_setAppearance(rend, lbl, x, y, fg, p->default_font);
+                        break;
                 default:
                         printf("Warning: Unknown component type (%d) in panel_newComponent.\n", type);
                         break;
@@ -122,6 +153,8 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
                                         return ui_event->event_type = BUTTON_CLICKED;
                                 }
                                 break;
+                        case COMPONENT_LABEL:
+                                break;
 
                         default:
                                 printf("Warning: Unknown component type (%d) in panel_update.\n", comp.type);
@@ -163,6 +196,9 @@ void panel_render(SDL_Renderer *rend, Panel p) {
                         case COMPONENT_BUTTON:
                                 button_render(rend, (Button)comp.component);
                                 break;
+                        case COMPONENT_LABEL:
+                                label_render(rend, (Label)comp.component);
+                                break;
 
                         default:
                                 printf("Warning: Unknown component type (%d) in panel_render.\n", comp.type);
@@ -183,13 +219,20 @@ void panel_hideComponent(Panel p, char *key, bool hide) {
 int destroyPanel(Panel p) {
         if (p == NULL) return -1;
 
-        for (int i = 0; i < p->component_count; i++) {
-                free(p->component_list[i].key);
-                free(p->component_list[i].component);
+        panel_destroyAllComponents(p);
+
+        if (p->default_font != NULL) {
+                TTF_CloseFont(p->default_font);
+                p->default_font = NULL;
         }
 
-        free(p->component_list);
+        if (p->component_list != NULL) {
+                free(p->component_list);
+                p->component_list = NULL;
+        }
+
         free(p);
+        p = NULL;
 
         return 0;
 }
@@ -235,10 +278,28 @@ bool panel_isComponentHidden(Panel p, char *key) {
 }
 
 void panel_destroyAllComponents(Panel p) {
-        for(int i = 0; i < p->component_count; i++) {
+        for (int i = 0; i < p->component_count; i++) {
+            if (p->component_list[i].key != NULL) {
                 free(p->component_list[i].key);
-                free(p->component_list[i].component);
+                p->component_list[i].key = NULL;
+            }
+    
+            switch (p->component_list[i].type) {
+                case COMPONENT_BUTTON:
+                    destroyButton((Button)p->component_list[i].component);
+                    break;
+                case COMPONENT_LABEL:
+                    destroyLabel((Label)p->component_list[i].component);
+                    break;
+                default:
+                    printf("Warning: Unknown component type (%d) in panel_destroyAllComponents.\n", 
+                           p->component_list[i].type);
+                    break;
+            }
         }
+    
         free(p->component_list);
+        p->component_list = NULL;
+    
         p->component_count = 0;
-}
+    }

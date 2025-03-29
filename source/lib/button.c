@@ -10,7 +10,7 @@ typedef struct Button {
         SDL_Color bg, fg, hov_bg, hov_fg;
         SDL_Rect box_rect, text_rect;
         bool is_hovered;
-        char text[64];
+        char text[256];
 } *Button;
 
 void button_setText(Button b, char *text) {
@@ -21,32 +21,11 @@ void button_setAppearance(SDL_Renderer *rend, Button b, SDL_Rect rect, SDL_Color
         b->font = font;
         b->bg = bg;
         b->fg = fg;
-        b->hov_bg = bg;
-        b->hov_fg = fg;
+        b->hov_bg = fg;
+        b->hov_fg = bg;
         b->box_rect = rect;
 
-        SDL_Surface *surf = TTF_RenderText_Blended(font, b->text, b->fg);
-        if (surf == NULL) {
-                printf("Error: Failed to create text surface for Button.\n");
-                free(b);
-                return;
-        }
-
-        b->font_texture = SDL_CreateTextureFromSurface(rend, surf);
-        if (b->font_texture == NULL) {
-                printf("Error: Failed to create texture from text surface.\n");
-                SDL_FreeSurface(surf);
-                free(b);
-                return;
-        }
-        b->font_hov_texture = b->font_texture;
-
-        b->text_rect.x = rect.x + rect.w/2 - surf->w/2;
-        b->text_rect.y = rect.y + rect.h/2 - surf->h/2;
-        b->text_rect.w = surf->w;
-        b->text_rect.h = surf->h;
-
-        SDL_FreeSurface(surf);
+        button_refreshTextures(rend, b);
 }
 
 Button createButton() {
@@ -58,6 +37,9 @@ Button createButton() {
 
         strcpy(b->text, "button");
         b->is_hovered = false;
+        b->font = NULL;
+        b->font_texture = NULL;
+        b->font_hov_texture = NULL;
 
         return b;
 }
@@ -69,22 +51,7 @@ int button_setColorsHovered(SDL_Renderer *rend, Button b, SDL_Color bg, SDL_Colo
         b->hov_bg = bg;
         b->hov_fg = fg;
 
-        SDL_Surface *surf = TTF_RenderText_Blended(b->font, b->text, b->hov_fg);
-        if (surf == NULL) {
-                printf("Error: Failed to create text surface for Button.\n");
-                free(b);
-                return false;
-        }
-
-        b->font_hov_texture = SDL_CreateTextureFromSurface(rend, surf);
-        if (b->font_hov_texture == NULL) {
-                printf("Error: Failed to create texture from text surface.\n");
-                SDL_FreeSurface(surf);
-                free(b);
-                return false;
-        }
-
-        SDL_FreeSurface(surf);
+        button_refreshTextures(rend, b);
 
         return true;
 }
@@ -118,15 +85,24 @@ void button_render(SDL_Renderer *rend, Button b) {
 
 int destroyButton(Button b) {
         if (b == NULL) {
-                printf("Error: Attempting to destroy a NULL Button.\n");
-                return false;
+            printf("Error: Attempting to destroy a NULL Button.\n");
+            return false;
         }
-
-        SDL_DestroyTexture(b->font_texture);
-        SDL_DestroyTexture(b->font_hov_texture);
+    
+        if (b->font_texture != NULL) {
+            SDL_DestroyTexture(b->font_texture);
+            b->font_texture = NULL;
+        }
+        
+        if (b->font_hov_texture != NULL) {
+            SDL_DestroyTexture(b->font_hov_texture);
+            b->font_hov_texture = NULL;
+        }
+    
         free(b);
         return true;
 }
+    
 
 void button_setBGColor(Button b, SDL_Color bg) {
         b->bg = bg;
@@ -141,48 +117,58 @@ void button_setFont(Button b, TTF_Font *font) {
 }
 
 void button_refreshTextures(SDL_Renderer *rend, Button b) {
-        SDL_Rect rect = b->box_rect;
+        if (b == NULL || rend == NULL || b->font == NULL) {
+            printf("Error: Invalid arguments to button_refreshTextures.\n");
+            return;
+        }
+    
+        if (b->font_texture != NULL) {
+            SDL_DestroyTexture(b->font_texture);
+            b->font_texture = NULL;
+        }
+        if (b->font_hov_texture != NULL) {
+            SDL_DestroyTexture(b->font_hov_texture);
+            b->font_hov_texture = NULL;
+        }
+    
         SDL_Surface *surf = TTF_RenderText_Blended(b->font, b->text, b->fg);
         if (surf == NULL) {
-                printf("Error: Failed to create text surface for Button.\n");
-                free(b);
-                return;
+            printf("Error: Failed to create text surface: %s\n", TTF_GetError());
+            return;
         }
-
         b->font_texture = SDL_CreateTextureFromSurface(rend, surf);
         if (b->font_texture == NULL) {
-                printf("Error: Failed to create texture from text surface.\n");
-                SDL_FreeSurface(surf);
-                free(b);
-                return;
+            printf("Error: Failed to create texture from surface: %s\n", SDL_GetError());
+            SDL_FreeSurface(surf);
+            return;
         }
-        b->font_hov_texture = b->font_texture;
-
-        b->text_rect.x = rect.x + rect.w/2 - surf->w/2;
-        b->text_rect.y = rect.y + rect.h/2 - surf->h/2;
+    
         b->text_rect.w = surf->w;
         b->text_rect.h = surf->h;
-
+        b->text_rect.x = b->box_rect.x + (b->box_rect.w - surf->w) / 2;
+        b->text_rect.y = b->box_rect.y + (b->box_rect.h - surf->h) / 2;
         SDL_FreeSurface(surf);
-
+    
         surf = TTF_RenderText_Blended(b->font, b->text, b->hov_fg);
         if (surf == NULL) {
-                printf("Error: Failed to create text surface for Button.\n");
-                free(b);
-                return false;
+            printf("Error: Failed to create hover text surface: %s\n", TTF_GetError());
+            return;
         }
-
         b->font_hov_texture = SDL_CreateTextureFromSurface(rend, surf);
         if (b->font_hov_texture == NULL) {
-                printf("Error: Failed to create texture from text surface.\n");
-                SDL_FreeSurface(surf);
-                free(b);
-                return false;
+            printf("Error: Failed to create hover texture from surface: %s\n", SDL_GetError());
+            SDL_FreeSurface(surf);
+            return;
         }
-
+    
         SDL_FreeSurface(surf);
-}
+    }
+    
 
 SDL_Rect button_getRect(Button b) {
         return b->box_rect;
+}
+
+void button_setRect(Button b, SDL_Rect rect) {
+        b->box_rect = rect;
 }
