@@ -1,5 +1,5 @@
 <root>
-        <panel key="main_panel">
+        <panel key="main">
                 <label key="label1">This is a label</label>
 
                 <button key="button1">Click Me!</button>

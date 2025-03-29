@@ -60,9 +60,7 @@ int UI_Init(UIRes *res) {
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
         panel_setAppearance(panel, createRect(0, 0, wm.w, wm.h), ui_res.color[WHITE], ui_res.color[WHITE]);
 
-        // Button b = panel_getComponent(panel, "button2");
-        // button_setBGColor(b, createColor(0,0,255,255));
-        // button_refreshTextures(wm.rend, b);
+        parseStyle(wm, panel, ui_res, "page/style.toml");
 }
 
 void render(SDL_Renderer *rend, Panel panel) {
@@ -86,12 +84,12 @@ void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         panel_update(wm->rend, panel, ui_event, wm->is_mouse_down);
         switch(ui_event->event_type) {
                 case BUTTON_CLICKED:
-                        if(strcmp(ui_event->component_key, "button2") == 0) {
-                                switchPage(wm, panel, ui_res, "page/page2.xml");
-                        }
-                        if(strcmp(ui_event->component_key, "b1") == 0) {
-                                switchPage(wm, panel, ui_res, "page/page.xml");
-                        }
+                        // if(strcmp(ui_event->component_key, "button2") == 0) {
+                        //         switchPage(wm, panel, ui_res, "page/page2.xml");
+                        // }
+                        // if(strcmp(ui_event->component_key, "b1") == 0) {
+                        //         switchPage(wm, panel, ui_res, "page/page.xml");
+                        // }
                         break;
         }
 }

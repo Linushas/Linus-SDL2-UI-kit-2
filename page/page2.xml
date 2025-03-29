@@ -1,5 +1,5 @@
 <root>
-        <panel key="main_panel">
+        <panel key="main">
                 <label key="l1">Page 2</label>
 
                 <button key="b1">Back</button>
