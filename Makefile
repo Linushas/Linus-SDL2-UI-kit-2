@@ -1,4 +1,4 @@
-OBJ = build/main.o build/button.o build/label.o build/panel.o build/app.o
+OBJ = build/main.o build/button.o build/label.o build/panel.o build/app.o build/load_page.o
 
 # Detect OS
 OS := $(shell uname -s 2>/dev/null)
@@ -27,8 +27,8 @@ else ifeq ($(OS), Windows_NT)
     # Windows Settings
     CC = gcc
     INCLUDE = C:/msys64/mingw64/include/SDL2
-    CFLAGS = -g -c -I$(INCLUDE)
-    LDFLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
+    CFLAGS = -g -c -I$(INCLUDE) -IC:/msys64/mingw64/include/libxml2 -LC:/msys64/mingw64/lib
+    LDFLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net -lxml2
     EXEC = build/main.exe
     SRCDIR = source
     REMOV = del /f build\*.o & del /f build\main.exe
@@ -44,6 +44,9 @@ build/main.o: $(SRCDIR)/main.c
 	$(CC) $(CFLAGS) $< -o $@
 
 build/app.o: $(SRCDIR)/app.c
+	$(CC) $(CFLAGS) $< -o $@
+
+build/load_page.o: $(SRCDIR)/load_page.c
 	$(CC) $(CFLAGS) $< -o $@
 
 build/button.o: $(SRCDIR)/lib/button.c

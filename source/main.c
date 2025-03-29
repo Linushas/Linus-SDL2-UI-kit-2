@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "app.h"
+#include "load_page.h"
 
 void startUp(WM *wm, UIRes *ui_res);
 void close(WM *wm, Panel panel, UIRes *ui_res);
@@ -12,20 +13,8 @@ int main(int argc, char **argv) {
         UI_Event ui_event;
         startUp(&wm, &ui_res);
 
-        
         Panel panel = createPanel();
-
-        int padding = 10;
-        int component_height = 35;
-        int comp_list[6] = {COMPONENT_LABEL, COMPONENT_BUTTON, COMPONENT_BUTTON, COMPONENT_LABEL, COMPONENT_LABEL, COMPONENT_BUTTON};
-        char *text_list[6] = {"Header", "Click Me!", "Button 2", "This is a longer paragraph", "Hello world!", "Another Button"};
-        char *keys[6] = {"header", "click", "b2", "pgrph", "hw", "ab"};
-        for(int i = 0; i < 6; i++) {
-                int x = padding;
-                int y = padding + component_height*i;
-                panel_newLazyComponent(wm.rend, panel, text_list[i], x, y, comp_list[i], keys[i]);
-        }
-        
+        parseXML(&wm, panel, "page/page.xml");
         applyStyling(wm, panel, ui_res);
         
         while(wm.is_running) {

@@ -59,9 +59,9 @@ int UI_Init(UIRes *res) {
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
         panel_setAppearance(panel, createRect(0, 0, wm.w, wm.h), ui_res.color[WHITE], ui_res.color[WHITE]);
 
-        Button b = panel_getComponent(panel, "b2");
-        button_setBGColor(b, createColor(0,0,255,255));
-        button_refreshTextures(wm.rend, b);
+        // Button b = panel_getComponent(panel, "button2");
+        // button_setBGColor(b, createColor(0,0,255,255));
+        // button_refreshTextures(wm.rend, b);
 }
 
 void render(SDL_Renderer *rend, Panel panel) {
@@ -79,17 +79,8 @@ void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         panel_update(wm->rend, panel, ui_event, wm->is_mouse_down);
         switch(ui_event->event_type) {
                 case BUTTON_CLICKED:
-                        if(strcmp(ui_event->component_key, "b2") == 0) {
-                                SDL_Color tmp = ui_res->color[BLUE];
-                                ui_res->color[BLUE] = ui_res->color[RED];
-                                ui_res->color[RED] = tmp;
-                                applyStyling(*wm, panel, *ui_res);
-                
-                                tmp = ui_res->color[BLACK];
-                                ui_res->color[BLACK] = ui_res->color[WHITE];
-                                ui_res->color[WHITE] = tmp;
-                                applyStyling(*wm, panel, *ui_res);
-                        }
+                        // if(strcmp(ui_event->component_key, "button2") == 0) {
+                        // }
                         break;
         }
 }

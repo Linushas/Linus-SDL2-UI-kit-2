@@ -1,6 +1,8 @@
-<panel key="main_panel">
-        <label key="label1">This is a label</label>
+<root>
+        <panel key="main_panel">
+                <label key="label1">This is a label</label>
 
-        <button key="button1">Click Me!</button>
-        <button key="button2">Another Button</button>
-</panel>
+                <button key="button1">Click Me!</button>
+                <button key="button2">Another Button</button>
+        </panel>
+</root>
