@@ -10,6 +10,7 @@ typedef struct Button {
         SDL_Color bg, fg, hov_bg, hov_fg;
         SDL_Rect box_rect, text_rect;
         bool is_hovered;
+        // void (*clicked)(Button);
         char text[256];
 } *Button;
 
