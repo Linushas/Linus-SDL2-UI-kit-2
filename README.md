@@ -3,3 +3,4 @@
 ## Dependencies
 - SDL2
 - SDL_ttf
+- libxml2
