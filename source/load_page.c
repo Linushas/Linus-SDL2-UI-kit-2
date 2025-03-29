@@ -51,6 +51,8 @@ void parseXML(WM *wm, Panel panel, const char *filename) {
                             component_type = COMPONENT_LABEL;
                         } else if (strcmp(type, "button") == 0) {
                             component_type = COMPONENT_BUTTON;
+                        } else if (strcmp(type, "card") == 0) {
+                            component_type = COMPONENT_CARD;
                         } else {
                             fprintf(stderr, "Unknown component type: %s\n", type);
                             xmlFree(key);
@@ -140,6 +142,7 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
         const char *h = toml_raw_in(comp, "h");
         const char *bg = toml_raw_in(comp, "bg");
         const char *fg = toml_raw_in(comp, "fg");
+        const char *border_color = toml_raw_in(comp, "border_color");
         const char *hov_bg = toml_raw_in(comp, "hov_bg");
         const char *hov_fg = toml_raw_in(comp, "hov_fg");
         const char *font = toml_raw_in(comp, "font");
@@ -184,6 +187,24 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
                 if (font) label_setFont(lbl, getFontFromName(font, ui_res));
 
                 label_refreshTextures(wm.rend, lbl);
+                break;
+
+            case COMPONENT_CARD:
+                Card c = panel_getComponent(panel, (char *)comp_key);
+                if (!c) break;
+
+                if (x && y && w && h) {
+                    SDL_Rect rect = {
+                        .x = atoi(x),
+                        .y = atoi(y),
+                        .w = atoi(w),
+                        .h = atoi(h)
+                    };
+                    card_setRect(c, rect);
+                }
+
+                if (bg) card_setBGColor(c, getColorFromName(bg, ui_res));
+                if (border_color) card_setBorderColor(c, getColorFromName(border_color, ui_res));
                 break;
 
             default:
@@ -249,6 +270,12 @@ TTF_Font* getFontFromName(const char *font_name, const UIRes ui_res) {
         return ui_res.montserrat[1];
     } else if (strcmp(stripped_name, "montserrat,big") == 0) {
         return ui_res.montserrat[2];
+    } else if (strcmp(stripped_name, "russo,big") == 0) {
+        return ui_res.russo[2];
+    } else if (strcmp(stripped_name, "russo,medium") == 0) {
+        return ui_res.russo[1];
+    } else if (strcmp(stripped_name, "russo,small") == 0) {
+        return ui_res.russo[0];
     }
 
     return ui_res.montserrat[0]; 

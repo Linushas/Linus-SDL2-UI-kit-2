@@ -4,6 +4,7 @@
 #include "panel.h"
 #include "button.h"
 #include "label.h"
+#include "card.h"
 
 typedef struct Component {
         char *key;
@@ -57,6 +58,10 @@ void panel_newComponent(Panel p, int type, char *key) {
                         Label lbl = createLabel();
                         panel_addComponent(p, type, lbl, key);
                         break;
+                case COMPONENT_CARD:
+                        Card c = createCard();
+                        panel_addComponent(p, type, c, key);
+                        break;
                 default:
                         printf("Warning: Unknown component type (%d) in panel_newComponent.\n", type);
                         break;
@@ -83,6 +88,11 @@ void panel_newLazyComponent(SDL_Renderer *rend, Panel p, char *text, int x, int 
                         panel_addComponent(p, type, lbl, key);
                         label_setText(lbl, text);
                         label_setAppearance(rend, lbl, x, y, fg, p->default_font);
+                        break;
+                case COMPONENT_CARD:
+                        Card c = createCard();
+                        panel_addComponent(p, type, c, key);
+                        card_setAppearance(c, (SDL_Rect){.x=x, .y=y, .w=100, .h=100}, bg, fg);
                         break;
                 default:
                         printf("Warning: Unknown component type (%d) in panel_newComponent.\n", type);
@@ -155,6 +165,8 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
                                 break;
                         case COMPONENT_LABEL:
                                 break;
+                        case COMPONENT_CARD:
+                                break;
 
                         default:
                                 printf("Warning: Unknown component type (%d) in panel_update.\n", comp.type);
@@ -198,6 +210,9 @@ void panel_render(SDL_Renderer *rend, Panel p) {
                                 break;
                         case COMPONENT_LABEL:
                                 label_render(rend, (Label)comp.component);
+                                break;
+                        case COMPONENT_CARD:
+                                card_render(rend, (Card)comp.component);
                                 break;
 
                         default:
@@ -290,6 +305,9 @@ void panel_destroyAllComponents(Panel p) {
                     break;
                 case COMPONENT_LABEL:
                     destroyLabel((Label)p->component_list[i].component);
+                    break;
+                case COMPONENT_CARD:
+                    destroyCard((Card)p->component_list[i].component);
                     break;
                 default:
                     printf("Warning: Unknown component type (%d) in panel_destroyAllComponents.\n", 

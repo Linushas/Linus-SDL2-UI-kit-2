@@ -1,4 +1,4 @@
-OBJ = build/main.o build/button.o build/label.o build/panel.o build/app.o build/load_page.o build/toml.o
+OBJ = build/main.o build/button.o build/label.o build/card.o build/panel.o build/app.o build/load_page.o build/toml.o
 
 # Detect OS
 OS := $(shell uname -s 2>/dev/null)
@@ -56,6 +56,9 @@ build/button.o: $(SRCDIR)/lib/button.c
 	$(CC) $(CFLAGS) $< -o $@
 
 build/label.o: $(SRCDIR)/lib/label.c
+	$(CC) $(CFLAGS) $< -o $@
+
+build/card.o: $(SRCDIR)/lib/card.c
 	$(CC) $(CFLAGS) $< -o $@
 
 build/panel.o: $(SRCDIR)/lib/panel.c

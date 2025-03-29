@@ -1,8 +1,22 @@
 <root>
-        <panel key="main">
-                <label key="label1">This is a label</label>
-
-                <button key="button1">Click Me!</button>
-                <button key="button2">See page 2</button>
-        </panel>
+    <panel key="main">
+        <label key="header">Header</label>
+        
+        <card key="post1"></card>
+            <label key="post1_title">Post Title 1</label>
+            <label key="post1_content">This is the first post content...</label>
+            <button key="read_more1">Read More</button>
+        
+        
+        <card key="post2"></card>
+            <label key="post2_title">Post Title 2</label>
+            <label key="post2_content">This is the second post content...</label>
+            <button key="read_more2">Read More</button>
+        
+        
+        <card key="sidebar"></card>
+            <label key="about_me">About Me</label>
+            <label key="about_content">I am ...</label>
+        
+    </panel>
 </root>

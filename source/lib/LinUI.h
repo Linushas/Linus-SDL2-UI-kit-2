@@ -5,5 +5,6 @@
 
 #include "button.h"
 #include "label.h"
+#include "card.h"
 
 #endif

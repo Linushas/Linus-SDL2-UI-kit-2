@@ -59,6 +59,10 @@ int UI_Init(UIRes *res) {
 
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
         parseStyle(wm, panel, ui_res, "page/style.toml");
+        Button b = panel_getComponent(panel, "footer");
+        button_setAppearance(wm.rend, b, createRect(0, wm.h-20, wm.w, 20), ui_res.color[SLATE_GREY], ui_res.color[WHITE], ui_res.montserrat[0]);
+        button_setColorsHovered(wm.rend, b, ui_res.color[SLATE_GREY], ui_res.color[WHITE]);
+        button_refreshTextures(wm.rend, b);
 }
 
 void render(SDL_Renderer *rend, Panel panel) {
@@ -71,6 +75,7 @@ void render(SDL_Renderer *rend, Panel panel) {
 void switchPage(WM *wm, Panel panel, UIRes *ui_res, char *filename) {
         panel_destroyAllComponents(panel);
         parseXML(wm, panel, filename);
+        panel_newLazyComponent(wm->rend, panel, filename, 0, wm->h-20, COMPONENT_BUTTON, "footer");
         applyStyling(*wm, panel, *ui_res);
 }
 
