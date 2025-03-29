@@ -3,6 +3,6 @@
                 <label key="label1">This is a label</label>
 
                 <button key="button1">Click Me!</button>
-                <button key="button2">Another Button</button>
+                <button key="button2">See page 2</button>
         </panel>
 </root>

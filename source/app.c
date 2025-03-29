@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "app.h"
+#include "load_page.h"
 
 int eventHandler(WM *wm) {
         static SDL_Event event;
@@ -79,8 +80,16 @@ void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         panel_update(wm->rend, panel, ui_event, wm->is_mouse_down);
         switch(ui_event->event_type) {
                 case BUTTON_CLICKED:
-                        // if(strcmp(ui_event->component_key, "button2") == 0) {
-                        // }
+                        if(strcmp(ui_event->component_key, "button2") == 0) {
+                                panel_destroyAllComponents(panel);
+                                parseXML(wm, panel, "page/page2.xml");
+                                applyStyling(*wm, panel, *ui_res);
+                        }
+                        if(strcmp(ui_event->component_key, "b1") == 0) {
+                                panel_destroyAllComponents(panel);
+                                parseXML(wm, panel, "page/page.xml");
+                                applyStyling(*wm, panel, *ui_res);
+                        }
                         break;
         }
 }
