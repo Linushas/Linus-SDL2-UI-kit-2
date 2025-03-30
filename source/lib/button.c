@@ -11,6 +11,8 @@ typedef struct Button {
         SDL_Rect box_rect, text_rect;
         bool is_hovered;
         // void (*clicked)(Button);
+        char link[256];
+        bool has_link;
         char text[256];
 } *Button;
 
@@ -41,8 +43,14 @@ Button createButton() {
         b->font = NULL;
         b->font_texture = NULL;
         b->font_hov_texture = NULL;
+        b->has_link = false;
 
         return b;
+}
+
+void button_setLink(Button b, char *link) {
+        strcpy(b->link, link);
+        b->has_link = true;
 }
 
 int button_setColorsHovered(SDL_Renderer *rend, Button b, SDL_Color bg, SDL_Color fg) {
@@ -103,8 +111,15 @@ int destroyButton(Button b) {
         free(b);
         return true;
 }
-    
 
+bool button_hasLink(Button b) {
+        return b->has_link;
+}
+
+void button_getLink(Button b, char *link) {
+        strcpy(link, b->link);
+}
+    
 void button_setBGColor(Button b, SDL_Color bg) {
         b->bg = bg;
 }

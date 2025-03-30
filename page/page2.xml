@@ -2,6 +2,6 @@
         <panel key="main">
                 <label key="l1">Page 2</label>
 
-                <button key="b1">Back</button>
+                <button key="b1" link="page\page.xml">Back</button>
         </panel>
 </root>

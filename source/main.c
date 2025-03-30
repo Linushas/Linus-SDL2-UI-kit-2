@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
         Panel panel = createPanel();
         parseXML(&wm, panel, "page/page.xml");
-        panel_newLazyComponent(wm.rend, panel, "page/page.xml", 0, wm.h-20, COMPONENT_BUTTON, "footer");
+        panel_newLazyComponent(wm.rend, panel, "page/page.xml", 0, 0, COMPONENT_BUTTON, "path_bar");
         applyStyling(wm, panel, ui_res);
         
         while(wm.is_running) {

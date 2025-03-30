@@ -59,9 +59,9 @@ int UI_Init(UIRes *res) {
 
 void applyStyling(const WM wm, Panel panel, const UIRes ui_res) {
         parseStyle(wm, panel, ui_res, "page/style.toml");
-        Button b = panel_getComponent(panel, "footer");
-        button_setAppearance(wm.rend, b, createRect(0, wm.h-20, wm.w, 20), ui_res.color[SLATE_GREY], ui_res.color[WHITE], ui_res.montserrat[0]);
-        button_setColorsHovered(wm.rend, b, ui_res.color[SLATE_GREY], ui_res.color[WHITE]);
+        Button b = panel_getComponent(panel, "path_bar");
+        button_setAppearance(wm.rend, b, createRect(0, 0, wm.w, 20), ui_res.color[WHITE], ui_res.color[BLACK], ui_res.montserrat[0]);
+        button_setColorsHovered(wm.rend, b, ui_res.color[WHITE], ui_res.color[BLACK]);
         button_refreshTextures(wm.rend, b);
 }
 
@@ -75,7 +75,7 @@ void render(SDL_Renderer *rend, Panel panel) {
 void switchPage(WM *wm, Panel panel, UIRes *ui_res, char *filename) {
         panel_destroyAllComponents(panel);
         parseXML(wm, panel, filename);
-        panel_newLazyComponent(wm->rend, panel, filename, 0, wm->h-20, COMPONENT_BUTTON, "footer");
+        panel_newLazyComponent(wm->rend, panel, filename, 0, 0, COMPONENT_BUTTON, "path_bar");
         applyStyling(*wm, panel, *ui_res);
 }
 
@@ -87,11 +87,12 @@ void UI_eventHandler(WM *wm, Panel panel, UI_Event *ui_event, UIRes *ui_res) {
         panel_update(wm->rend, panel, ui_event, wm->is_mouse_down);
         switch(ui_event->event_type) {
                 case BUTTON_CLICKED:
-                        if(strcmp(ui_event->component_key, "button2") == 0) {
-                                switchPage(wm, panel, ui_res, "page/page2.xml");
-                        }
-                        if(strcmp(ui_event->component_key, "b1") == 0) {
-                                switchPage(wm, panel, ui_res, "page/page.xml");
+                        Button b = panel_getComponent(panel, ui_event->component_key);
+                        if(button_hasLink(b)) {
+                                char link[256];
+                                button_getLink(b, link);
+                                printf("link: %s\n", link);
+                                switchPage(wm, panel, ui_res, link);
                         }
                         break;
         }

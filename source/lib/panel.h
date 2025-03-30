@@ -13,6 +13,7 @@ typedef struct UI_Event {
         int event_type;
         char component_key[256];
         int item_idx;
+        char link[256];
 } UI_Event;
 
 Panel createPanel();

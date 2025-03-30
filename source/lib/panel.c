@@ -159,6 +159,12 @@ int panel_update(SDL_Renderer *rend, Panel p, UI_Event *ui_event, bool is_mouse_
                         case COMPONENT_BUTTON:
                                 if(button_event((Button)comp.component, mouse_x, mouse_y) && (was_mouse_down && !is_mouse_down)) {
                                         strcpy(ui_event->component_key, comp.key);
+                                        if(button_hasLink((Button)comp.component)) {
+                                                char link[256];
+                                                button_getLink((Button)comp.component, link);
+                                                strcpy(ui_event->link, link);
+                                        }
+                                        
                                         was_mouse_down = false;
                                         return ui_event->event_type = BUTTON_CLICKED;
                                 }

@@ -20,6 +20,10 @@ void button_refreshTextures(SDL_Renderer *rend, Button b);
 void button_setRect(Button b, SDL_Rect rect);
 SDL_Rect button_getRect(Button b);
 
+void button_setLink(Button b, char *link);
+bool button_hasLink(Button b);
+void button_getLink(Button b, char *link);
+
 int button_event(Button b, int mouse_x, int mouse_y); // 0: NONE , 1: HOVERED
 void button_render(SDL_Renderer *rend, Button b);
 int destroyButton(Button b);

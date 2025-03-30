@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/tree.h>
@@ -75,6 +76,15 @@ void parseXML(WM *wm, Panel panel, const char *filename) {
                         int x = padding;
                         int y = y_offset;
                         panel_newLazyComponent(wm->rend, panel, content_copy, x, y, component_type, key_copy);
+
+                        if (component_type == COMPONENT_BUTTON) {
+                            Button b = panel_getComponent(panel, key_copy);
+                            xmlChar *link = xmlGetProp(component_node, BAD_CAST "link");
+                            if (link) {
+                                button_setLink(b, (char *)link);
+                                xmlFree(link);
+                            }
+                        }
     
                         free(key_copy);
                         free(content_copy);
@@ -89,6 +99,30 @@ void parseXML(WM *wm, Panel panel, const char *filename) {
         }
     
         xmlFreeDoc(doc);
+}
+
+int parseValue(const char* val, int window_dim) {
+    if (!val || !*val) return 0;
+    
+    const char* start = val;
+    size_t len = strlen(val);
+    if (len >= 2 && val[0] == '"' && val[len-1] == '"') {
+        start = val + 1;
+        len -= 2;
+    }
+    
+    if (len > 0 && start[len-1] == '%') {
+        int percent = atoi(start);
+        if (percent < 0) percent = 0;
+        if (percent > 100) percent = 100;
+        return (window_dim * percent) / 100;
+    }
+    
+    if (len > 2 && strncmp(start + len - 2, "px", 2) == 0) {
+        return atoi(start);
+    }
+    
+    return atoi(start);
 }
 
 void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
@@ -147,6 +181,14 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
         const char *hov_fg = toml_raw_in(comp, "hov_fg");
         const char *font = toml_raw_in(comp, "font");
 
+        SDL_Rect panel_rect = panel_getRect(panel);
+        int x_val = parseValue(x, panel_rect.w);
+        int y_val = parseValue(y, panel_rect.h);
+        int width = parseValue(w, panel_rect.w);
+        int height = parseValue(h, panel_rect.h);
+        x_val += panel_rect.x;
+        y_val += panel_rect.y;
+
         int type = panel_getComponentType(panel, (char *)comp_key);
         switch(type) {
             case COMPONENT_BUTTON: {
@@ -155,10 +197,10 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
 
                 if (x && y && w && h) {
                     SDL_Rect rect = {
-                        .x = atoi(x),
-                        .y = atoi(y),
-                        .w = atoi(w),
-                        .h = atoi(h)
+                        .x = x_val,
+                        .y = y_val,
+                        .w = width,
+                        .h = height
                     };
                     button_setRect(b, rect);
                 }
@@ -180,7 +222,7 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
                 if (!lbl) break;
 
                 if (x && y) {
-                    label_setPosition(lbl, atoi(x), atoi(y));
+                    label_setPosition(lbl, x_val, y_val);
                 }
 
                 if (fg) label_setColor(lbl, getColorFromName(fg, ui_res));
@@ -195,10 +237,10 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
 
                 if (x && y && w && h) {
                     SDL_Rect rect = {
-                        .x = atoi(x),
-                        .y = atoi(y),
-                        .w = atoi(w),
-                        .h = atoi(h)
+                        .x = x_val,
+                        .y = y_val,
+                        .w = width,
+                        .h = height
                     };
                     card_setRect(c, rect);
                 }
@@ -216,6 +258,29 @@ void parseStyle(WM wm, Panel panel, const UIRes ui_res, const char *filename) {
     toml_free(root);
 }
 
+unsigned char hexCharToValue(char c) {
+    c = toupper(c);
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'A' && c <= 'F') return 10 + c - 'A';
+    return 0;
+}
+
+SDL_Color getHexColor(const char *name) {
+    SDL_Color color = {0, 0, 0, 255};
+    
+    if (name == NULL || name[0] != '#' || strlen(name) != 7) {
+        return color;
+    }
+    
+    const char *hex = name + 1;
+    
+    color.r = (hexCharToValue(hex[0]) << 4) | hexCharToValue(hex[1]);
+    color.g = (hexCharToValue(hex[2]) << 4) | hexCharToValue(hex[3]);
+    color.b = (hexCharToValue(hex[4]) << 4) | hexCharToValue(hex[5]);
+    
+    return color;
+}
+
 SDL_Color getColorFromName(const char *name, const UIRes ui_res) {
     char stripped_name[256];
     int j = 0;
@@ -226,6 +291,8 @@ SDL_Color getColorFromName(const char *name, const UIRes ui_res) {
         stripped_name[j++] = name[i];
     }
     stripped_name[j] = '\0';
+
+    if(stripped_name[0] == '#') return getHexColor(stripped_name);
 
     if (strcmp(stripped_name, "BLACK") == 0) {
         return ui_res.color[BLACK];
